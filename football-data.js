@@ -64,9 +64,19 @@ window.KingmakerFootballData = (() => {
 
     const data = await response.json();
 
-    const matches = Array.isArray(data.matches)
-      ? data.matches.filter(validMatch)
-      : [];
+    const rawMatches = Array.isArray(data)
+  ? data
+  : Array.isArray(data.matches)
+  ? data.matches
+  : Array.isArray(data.data)
+  ? data.data
+  : Array.isArray(data.fixtures)
+  ? data.fixtures
+  : Array.isArray(data.events)
+  ? data.events
+  : [];
+
+const matches = rawMatches.filter(validMatch);
 
     try {
       localStorage.setItem(
