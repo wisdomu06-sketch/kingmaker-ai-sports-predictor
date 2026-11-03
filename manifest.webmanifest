@@ -1,0 +1,10 @@
+{
+  "name": "Kingmaker AI Sports Predictor",
+  "short_name": "Kingmaker AI",
+  "description": "Football and basketball prediction platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07111f",
+  "theme_color": "#07111f",
+  "icons": []
+}
