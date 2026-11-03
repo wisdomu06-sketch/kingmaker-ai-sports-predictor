@@ -2,104 +2,100 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kingmaker Football Data Test</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kingmaker API Diagnostic</title>
 <style>
 body {
   background: #0b1220;
   color: white;
-  font-family: Arial, sans-serif;
+  font-family: Arial;
   padding: 20px;
 }
-
 .card {
   background: #111f31;
-  padding: 20px;
+  padding: 18px;
   border-radius: 12px;
-  margin-bottom: 15px;
 }
-
 button {
   background: #1687f8;
   color: white;
-  padding: 13px 20px;
+  padding: 14px;
   border: 0;
   border-radius: 8px;
-  font-weight: bold;
 }
-
 pre {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  line-height: 1.6;
   color: #49d5e5;
 }
 </style>
 </head>
-
 <body>
 
 <h2>Kingmaker AI</h2>
-<h3>Historical Football Data Test</h3>
+<h3>Historical API Diagnostic</h3>
 
 <div class="card">
-  <p>Testing historical football results from SportScore.</p>
-  <button onclick="runTest()">Run Data Test</button>
-  <pre id="output">Waiting for test...</pre>
+<button onclick="testAPI()">Run Diagnostic</button>
+<pre id="output">Waiting...</pre>
 </div>
 
-<script src="./football-data.js"></script>
-
 <script>
-async function runTest() {
+async function testAPI() {
 
   const output = document.getElementById("output");
 
-  output.textContent = "Retrieving historical football results...";
+  output.textContent = "Testing SportScore...";
 
   try {
 
-    const matches =
-      await KingmakerFootballData.getHistoricalFixtures(7);
+    const url = new URL(
+      "https://sportscore.com/api/v1/fixtures/"
+    );
 
-    if (!matches.length) {
-      output.textContent =
-        "No completed matches retrieved. Check API availability.";
-      return;
+    url.searchParams.set("sport", "football");
+    url.searchParams.set("date", "2026-11-02");
+    url.searchParams.set("status", "finished");
+    url.searchParams.set("limit", "200");
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error("HTTP error: " + response.status);
     }
 
-    const teamCounts = {};
+    const data = await response.json();
 
-    matches.forEach(match => {
-      teamCounts[match.home] =
-        (teamCounts[match.home] || 0) + 1;
+    const matches = Array.isArray(data.matches)
+      ? data.matches
+      : [];
 
-      teamCounts[match.away] =
-        (teamCounts[match.away] || 0) + 1;
-    });
+    const finished = matches.filter(
+      m => String(m.status).toLowerCase() === "finished"
+    );
 
-    const teamName = Object.keys(teamCounts)
-      .sort((a, b) => teamCounts[b] - teamCounts[a])[0];
-
-    const stats =
-      KingmakerFootballData.calculateTeamStats(
-        teamName,
-        matches,
-        10
-      );
+    const withScores = finished.filter(
+      m =>
+        m.home_score !== null &&
+        m.away_score !== null &&
+        Number.isFinite(Number(m.home_score)) &&
+        Number.isFinite(Number(m.away_score))
+    );
 
     output.textContent =
-      "HISTORICAL DATA TEST: SUCCESS\n\n" +
-      "Completed matches retrieved: " + matches.length +
-      "\nTeams identified: " + Object.keys(teamCounts).length +
-      "\n\nSAMPLE TEAM STATISTICS\n\n" +
-      JSON.stringify(stats, null, 2);
+      "API CONNECTION: SUCCESS\n\n" +
+      "Date tested: 2026-11-02\n" +
+      "API count: " + data.count + "\n" +
+      "Matches received: " + matches.length + "\n" +
+      "Finished matches: " + finished.length + "\n" +
+      "Matches with scores: " + withScores.length +
+      "\n\nFIRST MATCH:\n\n" +
+      JSON.stringify(matches[0] || data, null, 2);
 
   } catch (error) {
 
     output.textContent =
-      "TEST FAILED\n\n" + error.message;
+      "DIAGNOSTIC FAILED:\n" + error.message;
 
   }
 }
