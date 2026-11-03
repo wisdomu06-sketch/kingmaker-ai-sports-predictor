@@ -55,8 +55,6 @@ const KingmakerEngine = (() => {
     (Math.max(0.2, attack) + Math.max(0.2, defence)) / 2
   );
   }
-    return Math.min(4, (attack + defence) / 2);
-  }
 
   // Poisson probability
   function poisson(lambda, goals) {
