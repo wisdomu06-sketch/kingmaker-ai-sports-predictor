@@ -5,9 +5,9 @@
 window.KingmakerFootballData = (() => {
 
   const API_V2 = "https://sportscore.com/api/v2/fixtures/";
-  const CACHE_PREFIX = "kingmaker_football_history_v1_";
-  const CACHE_HOURS = 12;
-  const HISTORY_DAYS = 30;
+const CACHE_PREFIX = "kingmaker_football_history_v2_";
+const CACHE_HOURS = 12;
+const HISTORY_DAYS = 30;
 
   function getDate(daysAgo) {
     const date = new Date();
@@ -46,7 +46,7 @@ window.KingmakerFootballData = (() => {
       // Ignore invalid cached data.
     }
 
-    const url = new URL(API_V1);
+    const url = new URL(API_V2);
 
     url.searchParams.set("sport", "football");
     url.searchParams.set("date", date);
