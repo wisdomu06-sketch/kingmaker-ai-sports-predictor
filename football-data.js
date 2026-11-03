@@ -6,7 +6,7 @@ window.KingmakerFootballData = (() => {
 
   const API = "https://sportscore.com/api/v1/fixtures/";
 
-  const CACHE_PREFIX = "kingmaker_football_history_";
+  const CACHE_PREFIX = "kingmaker_football_history_v2_";
   const CACHE_HOURS = 12;
   const HISTORY_DAYS = 30;
 
