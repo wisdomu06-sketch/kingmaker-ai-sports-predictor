@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111f">
+<title>Kingmaker AI Sports Predictor</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#07111f;color:#edf5ff;font-family:Arial,sans-serif}
+header{padding:20px;background:#101e30;border-bottom:1px solid #263b55}
+header h2{margin:0;color:#43d9e8}
+header p{margin:5px 0 0;color:#9db0c7;font-size:12px}
+main{padding:20px;max-width:700px;margin:auto}
+.hero{padding:25px 0}
+.hero small{color:#43d9e8;letter-spacing:2px}
+.hero h1{font-size:40px;margin:15px 0}
+.hero h1 span{color:#43d9e8}
+.card{background:#101e30;border:1px solid #263b55;border-radius:15px;padding:18px;margin:15px 0}
+.card h3{margin-top:0}
+.label{color:#43d9e8;font-size:11px;letter-spacing:1px}
+button{background:#1687ff;color:white;border:0;border-radius:9px;padding:13px 18px;font-weight:bold}
+.status{color:#ffca70;font-size:13px}
+.item{padding:13px 0;border-top:1px solid #263b55}
+.item small{display:block;color:#9db0c7;margin-top:4px}
+footer{text-align:center;color:#8296ad;font-size:12px;padding:30px}
+</style>
+</head>
+<body>
+<header>
+<h2>KINGMAKER</h2>
+<p>AI SPORTS PREDICTOR</p>
+</header>
+<main>
+<section class="hero">
+<small>DAILY SPORTS INTELLIGENCE</small>
+<h1>Predict smarter.<br><span>Play informed.</span></h1>
+<p>Football and basketball analysis powered by statistical intelligence.</p>
+</section>
+
+<div class="card">
+<div class="label">DAILY ACCUMULATOR</div>
+<h3>Today's three selections</h3>
+<p class="status" id="status">Prediction engine awaiting live data.</p>
+<button onclick="checkStatus()">Check system</button>
+</div>
+
+<div class="card">
+<div class="label">SUPPORTED SPORTS</div>
+<div class="item">⚽ Football<small>Match analysis, goals and match outcomes.</small></div>
+<div class="item">🏀 Basketball<small>Team performance and points analysis.</small></div>
+</div>
+
+<div class="card">
+<div class="label">BOOKMAKERS</div>
+<div class="item">Bet9ja</div>
+<div class="item">Bet365</div>
+<p class="status">Live odds connections pending verification.</p>
+</div>
+
+<div class="card">
+<div class="label">PERFORMANCE TRACKER</div>
+<div class="item">Predictions recorded: 0</div>
+<div class="item">Winning selections: 0</div>
+<div class="item">Losing selections: 0</div>
+<p class="status">Results tracking will activate when the backend is connected.</p>
+</div>
+</main>
+<footer>Kingmaker AI Sports Predictor · Nigeria WAT</footer>
+
+<script>
+function checkStatus(){
+document.getElementById("status").textContent=
+"Application interface is running. Live sports data and prediction engine are not yet connected.";
+}
+</script>
+</body>
+</html>
