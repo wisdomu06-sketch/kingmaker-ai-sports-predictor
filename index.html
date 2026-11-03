@@ -96,41 +96,105 @@ document.addEventListener("DOMContentLoaded", function() {
 
   main.appendChild(card);
 
-  document.getElementById("testEngine").onclick = function() {
+  document.getElementById("testEngine").onclick = async () => {
 
-    if (typeof KingmakerEngine === "undefined") {
-      document.getElementById("engineResult").innerHTML =
-        "<p class='status'>Engine not loaded. Check the connection.</p>";
-      return;
+  const output = document.getElementById("engineResult");
+  const button = document.getElementById("testEngine");
+
+  button.disabled = true;
+  output.textContent = "Retrieving historical football data...";
+
+  try {
+
+    if (
+      typeof KingmakerEngine === "undefined" ||
+      typeof KingmakerFootballData === "undefined"
+    ) {
+      throw new Error("Prediction engine or historical data module not loaded.");
     }
 
-    const home = {
-      goalsScored: [2, 1, 2, 3, 1],
-      goalsConceded: [0, 1, 1, 0, 2]
-    };
+    const fixtures =
+      await KingmakerFootballData.getHistoricalFixtures();
 
-    const away = {
-      goalsScored: [1, 0, 2, 1, 1],
-      goalsConceded: [2, 1, 1, 2, 1]
-    };
+    if (!fixtures || fixtures.length === 0) {
+      throw new Error("No completed historical matches were retrieved.");
+    }
 
-    const result = KingmakerEngine.footballPrediction(home, away);
+    const sample = fixtures[0];
 
-    document.getElementById("engineResult").innerHTML = `
+    const home = KingmakerFootballData.calculateTeamStats(
+      sample.home,
+      fixtures
+    );
+
+    const away = KingmakerFootballData.calculateTeamStats(
+      sample.away,
+      fixtures
+    );
+
+    if (
+      !home ||
+      !away ||
+      home.dataQuality === "INSUFFICIENT" ||
+      away.dataQuality === "INSUFFICIENT"
+    ) {
+      throw new Error(
+        "Insufficient historical matches for reliable analysis."
+      );
+    }
+
+    const result = KingmakerEngine.footballPrediction(
+      home,
+      away
+    );
+
+    output.innerHTML = `
+      <h3>Historical Data Analysis</h3>
+
+      <p><strong>Home:</strong> ${sample.home}</p>
+      <p><strong>Away:</strong> ${sample.away}</p>
+
       <div class="item">
         Home win: ${(result.homeWin * 100).toFixed(1)}%
       </div>
+
       <div class="item">
         Draw: ${(result.draw * 100).toFixed(1)}%
       </div>
+
       <div class="item">
         Away win: ${(result.awayWin * 100).toFixed(1)}%
       </div>
+
       <p class="status">
-        Illustrative test only. These are not live match predictions.
+        Home data quality: ${home.dataQuality}
+        <br>
+        Away data quality: ${away.dataQuality}
+        <br>
+        Historical matches retrieved: ${fixtures.length}
+      </p>
+
+      <p class="status">
+        Pipeline test only. These teams come from a completed
+        historical fixture, not an upcoming betting prediction.
       </p>
     `;
-  };
+
+  } catch (error) {
+
+    output.innerHTML = `
+      <p class="status">
+        Analysis unavailable: ${error.message}
+      </p>
+    `;
+
+  } finally {
+
+    button.disabled = false;
+
+  }
+
+};
 
 });
 </script>
@@ -142,7 +206,8 @@ if ("serviceWorker" in navigator) {
   });
 }
   </script>
-  <script src="./football-data.js"></script>
-  <script src="./sports-data.js"></script>
+  <script src="./engine.js"></script>
+<script src="./football-data.js"></script>
+<script src="./sports-data.js"></script>
 </body>
 </html>
