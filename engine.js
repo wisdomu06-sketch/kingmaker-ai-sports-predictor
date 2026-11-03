@@ -183,6 +183,10 @@ const KingmakerEngine = (() => {
 
 })();
 
-if (typeof module !== "undefined") {
+if (typeof window !== "undefined") {
+  window.KingmakerEngine = KingmakerEngine;
+}
+
+if (typeof module !== "undefined" && module.exports) {
   module.exports = KingmakerEngine;
 }
