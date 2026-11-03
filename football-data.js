@@ -46,7 +46,7 @@ window.KingmakerFootballData = (() => {
       // Ignore invalid cached data.
     }
 
-    const url = new URL(API);
+    const url = new URL(API_V2);
 
     url.searchParams.set("sport", "football");
     url.searchParams.set("date", date);
