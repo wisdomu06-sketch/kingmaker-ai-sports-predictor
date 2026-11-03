@@ -165,12 +165,39 @@
         (home || "Home team") + " vs " + (away || "Away team");
 
       const details = document.createElement("div");
-      details.className = "muted";
-      details.textContent = [
-        competition,
-        status,
-        score ? "Score: " + score : ""
-      ].filter(Boolean).join(" • ");
+details.className = "muted";
+
+const kickoffValue = getText(match, [
+  "time",
+  "datetime",
+  "kickoff",
+  "start_time",
+  "date"
+]);
+
+const kickoffDate = kickoffValue
+  ? new Date(kickoffValue)
+  : null;
+
+const kickoffText =
+  kickoffDate && !isNaN(kickoffDate.getTime())
+    ? new Intl.DateTimeFormat("en-NG", {
+        timeZone: "Africa/Lagos",
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true
+      }).format(kickoffDate) + " WAT"
+    : "";
+
+details.textContent = [
+  competition,
+  kickoffText,
+  status,
+  score ? "Score: " + score : ""
+].filter(Boolean).join(" • ");
 
       row.append(title, details);
       container.appendChild(row);
