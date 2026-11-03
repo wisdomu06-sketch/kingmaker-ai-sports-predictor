@@ -215,14 +215,14 @@ details.textContent = [
     const todayUTC = new Date();
     todayUTC.setUTCHours(0, 0, 0, 0);
 
-    // Request today's UTC fixtures and the next 7 days.
-    const dates = Array.from({ length: 8 }, (_, i) => {
-      const date = new Date(
-        todayUTC.getTime() + i * 24 * 60 * 60 * 1000
-      );
+    // Request only today's and tomorrow's fixtures
+const dates = Array.from({ length: 2 }, (_, i) => {
+  const date = new Date(
+    todayUTC.getTime() + i * 24 * 60 * 60 * 1000
+  );
 
-      return date.toISOString().slice(0, 10);
-    });
+  return date.toISOString().slice(0, 10);
+});
 
     const results = await Promise.allSettled(
       dates.map(async (date) => {
