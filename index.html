@@ -74,5 +74,63 @@ document.getElementById("status").textContent=
 "Application interface is running. Live sports data and prediction engine are not yet connected.";
 }
 </script>
+  <script src="engine.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const main = document.querySelector("main");
+
+  const card = document.createElement("div");
+  card.className = "card";
+
+  card.innerHTML = `
+    <div class="label">KINGMAKER PREDICTION ENGINE</div>
+    <h3>Test Football Analysis</h3>
+    <p>Test the statistical engine using illustrative team statistics.</p>
+    <button id="testEngine">Run Prediction Test</button>
+    <div id="engineResult"></div>
+  `;
+
+  main.appendChild(card);
+
+  document.getElementById("testEngine").onclick = function() {
+
+    if (typeof KingmakerEngine === "undefined") {
+      document.getElementById("engineResult").innerHTML =
+        "<p class='status'>Engine not loaded. Check the connection.</p>";
+      return;
+    }
+
+    const home = {
+      goalsScored: [2, 1, 2, 3, 1],
+      goalsConceded: [0, 1, 1, 0, 2]
+    };
+
+    const away = {
+      goalsScored: [1, 0, 2, 1, 1],
+      goalsConceded: [2, 1, 1, 2, 1]
+    };
+
+    const result = KingmakerEngine.footballPrediction(home, away);
+
+    document.getElementById("engineResult").innerHTML = `
+      <div class="item">
+        Home win: ${(result.homeWin * 100).toFixed(1)}%
+      </div>
+      <div class="item">
+        Draw: ${(result.draw * 100).toFixed(1)}%
+      </div>
+      <div class="item">
+        Away win: ${(result.awayWin * 100).toFixed(1)}%
+      </div>
+      <p class="status">
+        Illustrative test only. These are not live match predictions.
+      </p>
+    `;
+  };
+
+});
+</script>
 </body>
 </html>
