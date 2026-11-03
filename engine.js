@@ -33,10 +33,28 @@ const KingmakerEngine = (() => {
 
   // Football expected goals estimate
   function footballGoals(team, opponent) {
+  const attack = Number.isFinite(Number(team.averageGoalsScored))
+    ? Number(team.averageGoalsScored)
+    : average(team.goalsScored || []);
 
-    const attack = Math.max(0.2, average(team.goalsScored));
-    const defence = Math.max(0.2, average(opponent.goalsConceded));
+  const defence = Number.isFinite(Number(opponent.averageGoalsConceded))
+    ? Number(opponent.averageGoalsConceded)
+    : average(opponent.goalsConceded || []);
 
+  if (
+    !Number.isFinite(attack) ||
+    !Number.isFinite(defence) ||
+    attack < 0 ||
+    defence < 0
+  ) {
+    throw new Error("Insufficient historical team statistics.");
+  }
+
+  return Math.min(
+    4,
+    (Math.max(0.2, attack) + Math.max(0.2, defence)) / 2
+  );
+  }
     return Math.min(4, (attack + defence) / 2);
   }
 
