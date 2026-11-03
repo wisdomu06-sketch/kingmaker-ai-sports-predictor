@@ -110,6 +110,7 @@
 
     matches.forEach(match => {
       const home = getText(match, [
+        "home",
         "homeTeam.name",
         "home_team.name",
         "home.name",
@@ -121,6 +122,7 @@
       ]);
 
       const away = getText(match, [
+        "away",
         "awayTeam.name",
         "away_team.name",
         "away.name",
@@ -132,6 +134,7 @@
       ]);
 
       const competition = getText(match, [
+        "competition",
         "competition.name",
         "league.name",
         "tournament.name",
@@ -141,6 +144,7 @@
       ]);
 
       const status = getText(match, [
+        "status_text",
         "status.long",
         "status.name",
         "status",
