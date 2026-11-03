@@ -3,7 +3,7 @@
 // Source: SportScore API
 
 (() => {
-  const API = "https://sportscore.com/api/widget/matches/";
+  const API = "https://sportscore.com/api/v1/fixtures/";
   const section = document.createElement("section");
 
   section.id = "live-sports-data";
@@ -178,33 +178,121 @@
   }
 
   async function loadSport(sport, containerId) {
-    const container = document.getElementById(containerId);
+  const container = document.getElementById(containerId);
+  const now = Date.now();
+  const endTime = now + 7 * 24 * 60 * 60 * 1000;
 
-    try {
-      const response = await fetch(
-        API + "?sport=" + encodeURIComponent(sport) + "&limit=10",
-        { cache: "no-store" }
+  try {
+    container.textContent = "Loading upcoming fixtures...";
+
+    const todayUTC = new Date();
+    todayUTC.setUTCHours(0, 0, 0, 0);
+
+    // Request today's UTC fixtures and the next 7 days.
+    const dates = Array.from({ length: 8 }, (_, i) => {
+      const date = new Date(
+        todayUTC.getTime() + i * 24 * 60 * 60 * 1000
       );
 
-      if (!response.ok) {
-        throw new Error("The data source returned HTTP " + response.status);
-      }
+      return date.toISOString().slice(0, 10);
+    });
 
-      const data = await response.json();
-      const matches = Array.isArray(data)
-        ? data
-        : data.matches || data.data || data.events || [];
+    const results = await Promise.allSettled(
+      dates.map(async (date) => {
+        const url = new URL(API);
 
-      renderMatches(container, matches);
+        url.searchParams.set("sport", sport);
+        url.searchParams.set("date", date);
+        url.searchParams.set("status", "upcoming");
+        url.searchParams.set("limit", "200");
 
-      return matches.length;
-    } catch (error) {
-      container.textContent =
-        "Could not load data. " + error.message;
+        const response = await fetch(url.toString(), {
+          cache: "no-store"
+        });
 
-      container.classList.add("error");
-      throw error;
+        if (!response.ok) {
+          throw new Error("Could not load fixtures for " + date);
+        }
+
+        const data = await response.json();
+
+        return Array.isArray(data)
+          ? data
+          : data.matches ||
+            data.data ||
+            data.fixtures ||
+            data.events ||
+            [];
+      })
+    );
+
+    const successfulResults = results
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value);
+
+    if (successfulResults.length === 0) {
+      throw new Error("The sports data source is unavailable.");
     }
+
+    const allMatches = successfulResults.flat();
+
+    const matches = allMatches.filter((match) => {
+      const kickoff =
+        match.time ||
+        match.datetime ||
+        match.kickoff ||
+        match.start_time ||
+        match.date;
+
+      if (!kickoff) return false;
+
+      const kickoffTime = Date.parse(kickoff);
+
+      return (
+        Number.isFinite(kickoffTime) &&
+        kickoffTime >= now &&
+        kickoffTime <= endTime
+      );
+    });
+
+    const uniqueMatches = Array.from(
+      new Map(
+        matches.map((match) => [
+          match.slug ||
+            match.id ||
+            [
+              match.home,
+              match.away,
+              match.time || match.datetime || match.date
+            ].join("-"),
+          match
+        ])
+      ).values()
+    );
+
+    uniqueMatches.sort((a, b) => {
+      const timeA = Date.parse(
+        a.time || a.datetime || a.kickoff || a.start_time || a.date
+      );
+
+      const timeB = Date.parse(
+        b.time || b.datetime || b.kickoff || b.start_time || b.date
+      );
+
+      return timeA - timeB;
+    });
+
+    renderMatches(container, uniqueMatches);
+
+    return uniqueMatches.length;
+  } catch (error) {
+    container.textContent =
+      "Could not load upcoming fixtures. " + error.message;
+
+    container.classList.add("error");
+
+    throw error;
+  }
   }
 
   async function loadAllSports() {
